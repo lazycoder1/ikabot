@@ -61,6 +61,35 @@ def sendToBot(session, msg, Token=False, Photo=None):
         resp = session.s.post('https://api.telegram.org/bot{}/sendDocument'.format(telegram_data['botToken']), files={'document': ('captcha.png', Photo)}, data={'chat_id': telegram_data['chatId'],'caption': msg})
         session.s.headers = headers
 
+def sendToGroupByBot(session, msg, Token=False, Photo=None):
+    """This function will send the ``msg`` argument passed to it as a message to the user on Telegram
+    Parameters
+    ----------
+    session : ikabot.web.session.Session
+        Session object
+    msg : str
+        a string representing the message to send to the user on Telegram
+    Token : bool
+        a boolean indicating whether or not to attach the process id, the users server, world and Ikariam username to the message
+    Photo : bytes
+        a bytes object representing a picture to be sent.
+    """
+    if checkTelegramData(session) is False:
+        return
+    if Token is False:
+        msg = 'pid:{}\n{}\n{}'.format(os.getpid(), config.infoUser, msg)
+
+    sessionData = session.getSessionData()
+    telegram_data = sessionData['shared']['telegram']
+    if Photo is None:
+        ikabot.web.session.normal_get('https://api.telegram.org/bot{}/sendMessage'.format(telegram_data['botToken']), params={'chat_id': -672579420, 'text': msg})
+    else:
+        # we need to clear the headers here because telegram doesn't like keep-alive, might as well get rid of all headers
+        headers = session.s.headers.copy()
+        session.s.headers.clear()
+        resp = session.s.post('https://api.telegram.org/bot{}/sendDocument'.format(telegram_data['botToken']), files={'document': ('captcha.png', Photo)}, data={'chat_id': -672579420,'caption': msg})
+        session.s.headers = headers
+
 
 def telegramDataIsValid(session):
     """This function checks whether or not there is any Telegram data stored in the .ikabot file

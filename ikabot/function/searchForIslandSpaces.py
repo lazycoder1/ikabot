@@ -81,6 +81,7 @@ def searchForIslandSpaces(session, event, stdin_fd, predetermined_input):
     except Exception as e:
         msg = _('Error in:\n{}\nCause:\n{}').format(info, traceback.format_exc())
         sendToBot(session, msg)
+        sendToGroupByBot(session, msg)
     finally:
         session.logout()
 
@@ -128,6 +129,7 @@ def do_it(session, islandList, time, fights):
                         # we didn't find the city_before in the cities_now
                         msg = _('The city {} of the player {} disappeared in {} {}:{} {}').format(city_before['name'], city_before['Name'], materials_names[int(island['tradegood'])], island['x'], island['y'], island['name'])
                         sendToBot(session, msg)
+                        sendToGroupByBot(session, msg)
 
                     if fights.lower() == 'y':
                         for city_now in cities_now:
@@ -135,9 +137,11 @@ def do_it(session, islandList, time, fights):
                                 if 'infos' in city_now and 'infos' not in city_before and 'armyAction' in city_now['infos'] and city_now['infos']['armyAction'] == 'fight':
                                     msg = _('A fight started in the city {} of the player {} on island {} {}:{} {}').format(city_before['name'], city_before['Name'], materials_names[int(island['tradegood'])], island['x'], island['y'], island['name'])
                                     sendToBot(session, msg)
+                                    sendToGroupByBot(session, msg)
                                 if 'infos' not in city_now and 'infos' in city_before and 'armyAction' in city_before['infos'] and city_before['infos']['armyAction'] == 'fight':
                                     msg = _('A fight stopped in the city {} of the player {} on island {} {}:{} {}').format(city_before['name'], city_before['Name'], materials_names[int(island['tradegood'])], island['x'], island['y'], island['name'])
                                     sendToBot(session, msg)
+                                    sendToGroupByBot(session, msg)
 
                 # someone colonised
                 for city_now in cities_now:
@@ -145,6 +149,7 @@ def do_it(session, islandList, time, fights):
                         # we didn't find the city_now in the cities_before
                         msg = _('Player {} created a new city {} in {} {}:{} {}').format(city_now['Name'], city_now['name'], materials_names[int(island['tradegood'])], island['x'], island['y'], island['name'])
                         sendToBot(session, msg)
+                        sendToGroupByBot(session, msg)
                         
                 cities_before_per_island[islandId] = cities_now.copy() # update cities_before_per_island for the current island
 
